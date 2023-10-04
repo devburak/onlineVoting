@@ -1,11 +1,12 @@
 const jwt = require('jsonwebtoken');
 const User = require('../db/models/user');
+const PasswordReset =require('../db/models/passwordReset')
 const fs = require('fs');
 const path = require('path');
 const { generateAndSaveResetCode } = require('./passwordCode'); 
 const {sendEmail} = require('./mail');
 const {formatDate } = require('../utils/date');
-
+const bcrypt = require('bcryptjs');
 // Your secret key for signing JWTs
 const SECRET_KEY = process.env.SECRET_KEY;
 
