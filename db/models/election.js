@@ -14,7 +14,7 @@ const electionSchema = new mongoose.Schema({
                 trim: true
             },
             value: {
-                type: String,
+                type: Number,
                 required: true
             }
             // İsterseniz her seçenek için ek bilgiler ekleyebilirsiniz.
@@ -36,6 +36,11 @@ const electionSchema = new mongoose.Schema({
     endTime: {
         type: Date,
         required: true
+    },
+    isActive:{
+        type : Boolean ,
+        required:true,
+        default:true
     }
 });
 

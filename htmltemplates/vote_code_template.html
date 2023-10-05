@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Oy Kullanma Kodunuz</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f8f8;
+            padding: 20px;
+        }
+        .email-container {
+            background-color: white;
+            padding: 20px;
+            max-width: 600px;
+            margin: auto;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .code-box {
+            background-color: #e0e0e0;
+            color: #333;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+        a {
+            text-decoration: none;
+            color: #4C6EF5;
+        }
+        p {
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <h2>Oy Kullanma Kodunuz</h2>
+        <p>Bu mail size seçimlerde oy kullanabilmeniz için üretilen kodu göndermek için yazılmıştır.</p>
+        <div class="code-box" id="voting-code">
+            {YOUR_VOTING_CODE}
+        </div>
+        <p>link : <a href="{VOTING_LINK}" target="_blank"> {VOTING_LINK}</a> tıklayarak otomatik olarak oy kullanma ekranına gidebilirsiniz.</p>
+        <p>Kod kullanım süresi 20 dk ile sınırlıdır. Oy kullanmadığınız ve seçim aktif olduğu sürece tekrar kod isteyebilirsiniz.</p>
+        <p>Bu oy size özel üretilmiştir lütfen kimse ile paylaşmayın.</p>
+        <p>Oyunuzu kullanırken dikkatli tercih yapmalı, oyunuzu silip değiştiremeyeceğinizi bilerek kullanmalısınız. Oy kullandıktan sonra seçim güvenliğini takip etmeniz için farklı ekranlara erişiminiz olacak, bu sayede sistemi takip edebileceksiniz.</p>
+        <p>Eğer bir yanlışlık olduğunu düşünüyorsanız <a href="mailto:{CONTACT_EMAIL}" target="_blank">{CONTACT_EMAIL}</a> adresi ile iletişime geçebilirsiniz.</p>
+    </div>
+</body>
+</html>

@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken');
 const User = require('../db/models/user'); 
-const Voter =require('../db/models/user')
+const Voter =require('../db/models/voter')
 // Your secret key for signing JWTs
 const SECRET_KEY = process.env.SECRET_KEY;
 
@@ -32,7 +32,7 @@ const authenticateVoter = async (req, res, next) => {
             return res.status(401).json({ message: 'Voter token required' });
         }
 
-        const voter = await Voter.findOne({ token: voterToken, hasVoted: true });
+        const voter = await Voter.findOne({ token: String(voterToken) });
         
         if (!voter) {
             return res.status(401).json({ message: 'Sadece oy kullananların yetkisi var' });
@@ -47,5 +47,41 @@ const authenticateVoter = async (req, res, next) => {
 };
 
 
+const authenticateJWTOrVoter = async (req, res, next) => {
+    try {
+        // JWT Kontrolü
+        const token = req.headers.authorization?.split(' ')[1] ?? null;
+        if (token) {
+            const decoded = jwt.verify(token, SECRET_KEY);
+            const user = await User.findById(decoded.userId);
 
-module.exports = {authenticateJWT,authenticateVoter};
+            if (user) {
+                req.user = user;
+                return next();
+            }
+        }
+        console.log(req.headers);
+        // Voter Kontrolü
+        const voterToken = req.headers['voter-token'];
+        console.log(`Token: [${voterToken}]`);
+        if (voterToken) {
+            const voter = await Voter.findOne({ token: String(voterToken) });
+            console.log(voter)
+            if (voter) {
+                req.voter = voter;
+                return next();
+            }
+        }
+        
+        
+        // Eğer hiçbir koşul sağlanmıyorsa, yetkisiz olarak kabul edilir
+        return res.status(403).send({ message: 'Unauthorized' });
+    } catch (error) {
+        console.error('Error in authenticateJWTOrVoter middleware:', error);
+        res.status(500).send({ message: 'An error occurred' });
+    }
+};
+
+
+
+module.exports = {authenticateJWT,authenticateVoter,authenticateJWTOrVoter};

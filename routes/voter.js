@@ -4,7 +4,7 @@ const Election = require('../db/models/election');
 const Voter = require('../db/models/voter');
 const Member =require('../db/models/member');
 const voterService = require("../services/voterService")
-const  {authenticateJWT ,authenticateVoter }  = require('../services/authMiddleware');  // JWT middleware'inizin konumuna göre ayarlanmalıdır.
+const  {authenticateJWT ,authenticateVoter,authenticateJWTOrVoter }  = require('../services/authMiddleware');  // JWT middleware'inizin konumuna göre ayarlanmalıdır.
 const logService = require('../services/logService');
 
 router.post('/new/:electionId', authenticateJWT, async (req, res) => {
@@ -71,13 +71,13 @@ router.post('/new/:electionId', authenticateJWT, async (req, res) => {
     }
 });
 
-router.get('/:electionId', async (req, res) => {
+router.get('/:electionId',authenticateJWTOrVoter, async (req, res) => {
     try {
         const { electionId } = req.params;
 
         // Sayfa numarası ve sayfa başına öğe sayısını al.
         const page = parseInt(req.query.page) || 1;
-        const limit = parseInt(req.query.limit) || 10;
+        const limit = parseInt(req.query.limit) || 30;
         const hasVoted = req.query.hasVoted === 'true' ? true : req.query.hasVoted === 'false' ? false : undefined;
         const country = req.query.country;
         const city = req.query.city;
@@ -95,5 +95,8 @@ router.get('/:electionId', async (req, res) => {
         res.status(500).json({ message: 'An error occurred while fetching voters' });
     }
 });
+
+
+
 
 module.exports = router;
