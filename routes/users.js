@@ -1,13 +1,14 @@
 const express = require('express');
 const userService = require('../services/userService');
-const loginService = require('../services/loginService')
+const loginService = require('../services/loginService');
+const {authenticateJWT} = require('../services/authMiddleware');
 const router = express.Router();
 
-router.post('/', userService.createUser);
-router.get('/', userService.getUsers);
-router.get('/:id', userService.getUserById);
-router.put('/:id', userService.updateUser);
-router.delete('/:id', userService.deleteUser);
+router.post('/',authenticateJWT, userService.createUser);
+router.get('/', authenticateJWT, userService.getUsers);
+router.get('/:id',authenticateJWT, userService.getUserById);
+router.put('/:id',authenticateJWT, userService.updateUser);
+router.delete('/:id',authenticateJWT, userService.deleteUser);
 router.post('/signin', loginService.signIn);
 
 router.post('/regenerate', async (req, res) => {

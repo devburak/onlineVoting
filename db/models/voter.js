@@ -5,14 +5,15 @@ const Schema = mongoose.Schema;
 const voterSchema = new Schema({
     member: { type: Schema.Types.ObjectId, ref: 'Member' },
     election: { type: Schema.Types.ObjectId, ref: 'Election' },
-    token: { type: String, required: true, unique: true },
-    tokenExpiry: { type: Date, required: true },
+    token: { type: String, required: false, unique: true ,sparse: true},
+    tokenExpiry: { type: Date, required: false },
     hasVoted: { type: Boolean, default: false },
     createdBy: { type: Schema.Types.ObjectId, ref: 'User' }, // User modelinizi referans alın
     updatedBy: { type: Schema.Types.ObjectId, ref: 'User' }, // User modelinizi referans alın
     created: { type: Date, default: Date.now },
     updated: { type: Date, default: Date.now }
 });
+
 voterSchema.plugin(mongoosePaginate);
 // Güncelleme tarihini otomatik olarak set eden bir middleware
 voterSchema.pre('save', function(next) {

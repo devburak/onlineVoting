@@ -25,6 +25,7 @@ userSchema.pre('save', async function(next) {
     }
 });
 
+
 // Güncelleme tarihini otomatik olarak set eden bir middleware
 userSchema.pre('save', function(next) {
     if (this.isModified()) {
@@ -32,6 +33,7 @@ userSchema.pre('save', function(next) {
     }
     next();
 });
+
 
 userSchema.methods.toJSON = function() {
     const user = this.toObject();

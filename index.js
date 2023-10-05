@@ -3,7 +3,10 @@ const cors = require('cors');
 require('dotenv').config();
 const connectToDatabase = require('./db');
 const memberRoutes = require('./routes/members');
-const userRoutes = require('./routes/users')
+const userRoutes = require('./routes/users');
+const logRoutes = require('./routes/log');
+const voterRoutes = require('./routes/voter');
+const electionRoutes = require('./routes/election');
 
 const app = express();
 app.use(express.json());
@@ -17,6 +20,9 @@ app.get('/', (req, res) => {
 
 app.use('/members', memberRoutes);
 app.use('/users', userRoutes );
+app.use('/logs', logRoutes );
+app.use('/voters' ,voterRoutes);
+app.use('/election',electionRoutes);
 
 const port = process.env.PORT || 5000;
 app.listen(port, () => {

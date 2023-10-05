@@ -1,12 +1,12 @@
 const express = require('express');
 const memberService = require('../services/memberService');
-
+const {authenticateJWT} = require('../services/authMiddleware')
 const router = express.Router();
 
-router.post('/', memberService.createMember);
-router.get('/', memberService.getMembers);
-router.get('/:id', memberService.getMemberById);
-router.put('/:id', memberService.updateMember);
-router.delete('/:id', memberService.deleteMember);
+router.post('/',authenticateJWT, memberService.createMember);
+router.get('/',authenticateJWT, memberService.getMembers);
+router.get('/:id',authenticateJWT, memberService.getMemberById);
+router.put('/:id',authenticateJWT, memberService.updateMember);
+router.delete('/:id', authenticateJWT,memberService.deleteMember);
 
 module.exports = router;
