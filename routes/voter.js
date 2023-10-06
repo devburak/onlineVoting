@@ -96,6 +96,8 @@ router.get('/:electionId',authenticateJWTOrVoter, async (req, res) => {
     }
 });
 
+router.delete('/:id' ,authenticateJWT , voterService.deleteVoter )
+
 
 
 

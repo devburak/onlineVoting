@@ -66,7 +66,7 @@ exports.voteRequestService = async (identifier, electionId) => {
 
             // E-posta gönderme
             sendEmail(identifier, 'Oy Kodunuz', emailContent);
-            await logService.logAction('TOKEN', 'SUCCESS', '', "email üzerinden token gönderildi");
+            await logService.logAction({action:'TOKEN',  status:'SUCCESS', details: "email üzerinden token gönderildi"});
         }else {
             // Identifier, e-posta formatında değil, bu durumda SMS gönder
             const smsContent = `Oy kullanma kodunuz: ${votingCode}  Kod kullanım süresi 20 dk ile sınırlıdır. oy.sykp.org.tr/vote?code=${votingCode} adresine gidebilirsiniz.`;
@@ -74,14 +74,15 @@ exports.voteRequestService = async (identifier, electionId) => {
                 await sendSMSTR(member.phone, smsContent);
             else
                 await sendSMST(member.phone, smsContent);
-            await logService.logAction('TOKEN', 'SUCCESS', '', "sms üzerinden token gönderildi");
+
+            await logService.logAction( {action: 'TOKEN',  status: 'SUCCESS', details: member.phone +" sms üzerinden token gönderildi"});
         }
 
         return { message: 'Voting token sent to the voter' };
         
     } catch (error) {
         console.error('Error in voteRequestService:', error);
-        await logService.logAction('TOKEN', 'FAILURE', null, "token gönderilemedi");
+        await logService.logAction({action:'TOKEN', status:'FAILURE', details: "token gönderilemedi"});
         throw error;
     }
 };
@@ -179,17 +180,17 @@ exports.castVote = async (req, res) => {
         const endTime = Date.now();
         savedVote.envelope.responseTime = endTime - startTime;
         await savedVote.save();
-        await logService.logAction('VOTE', 'SUCCESS', "", "Oy Kullanıldı : " +savedVote._id);
+        await logService.logAction({action:'VOTE', status:'SUCCESS',  details:"Oy Kullanıldı : " +savedVote._id});
         res.status(200).json({ 
             message: 'Oy başarılı şekilde kullanıldı',
             voteId: savedVote._id
         });
     } catch (error) {
         console.error('Error in castVote:', error);
-        await logService.logAction('VOTE', 'FAILURE', "", "Oy Kullanılamadı");
+        await logService.logAction({action:'VOTE',status: 'FAILURE', details: "Oy Kullanılamadı"});
         res.status(500).json({
-            message: 'An error occurred while casting the vote.',
-            error: error.message
+            message: 'An error occurred while casting the vote.' +error.message,
+           
         });
     }
 };

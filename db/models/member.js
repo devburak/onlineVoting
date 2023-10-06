@@ -7,7 +7,12 @@ const memberSchema = new mongoose.Schema({
     city: { type: String, required: true },
     country: { type: String, required: true },
     phone: { type: String, unique: true, required:true },
-    email: { type: String, unique: true, sparse: true },
+    email: {
+        type: String,
+        unique: true,
+        sparse: true,
+        default: null
+    },
     created: { type: Date, default: Date.now },
     updated: { type: Date, default: Date.now }
 });

@@ -6,6 +6,11 @@ const electionSchema = new mongoose.Schema({
         required: true,
         trim: true
     },
+    name: {
+        type: String,
+        required: true,
+        trim: true
+    },
     options: [
         {
             text: {

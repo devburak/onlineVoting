@@ -7,10 +7,10 @@ exports.createElection = async (req, res) => {
     try {
         const election = new Election(req.body);
         await election.save();
-        await logService.logAction('CREATE', 'SUCCESS', req.user?.id, 'Election created successfully');
+        await logService.logAction({action:'CREATE', status:'SUCCESS', userId: req.user?.id, details:'Election created successfully'});
         res.status(201).send(election);
     } catch (error) {
-        await logService.logAction('CREATE', 'FAILURE', req.user?.id, `Election creation failed: ${error.message}`);
+        await logService.logAction({action:'CREATE', status:'FAILURE', userId: req.user?.id, details: `Election creation failed: ${error.message}`});
         res.status(500).send(error);
     }
 };
@@ -42,10 +42,10 @@ exports.updateElection = async (req, res) => {
         if (!election) {
             return res.status(404).send();
         }
-        await logService.logAction('UPDATE', 'SUCCESS', req.user?.id, req.params?.id+' Seçim Güncellendi');
+        await logService.logAction({action: 'UPDATE', status:'SUCCESS', userId: req.user?.id, details: req.params?.id+' Seçim Güncellendi'});
         res.send(election);
     } catch (error) {
-        await logService.logAction('UPDATE', 'FAILURE', req.user?.id, `${req.params?.id} Seçim güncelleme hatası: ${error.message}`);
+        await logService.logAction({action: 'UPDATE', status: 'FAILURE', userId: req.user?.id, details: `${req.params?.id} Seçim güncelleme hatası: ${error.message}`});
         res.status(500).send(error);
     }
 };
@@ -59,10 +59,10 @@ exports.deleteElection = async (req, res) => {
         if (!election) {
             return res.status(404).send();
         }
-        await logService.logAction('DELETE', 'SUCCESS', req.user?.id, req.params?.id+' Seçim Silindi');
+        await logService.logAction({action:'DELETE', status:'SUCCESS', userId: req.user?.id, details: req.params?.id+' Seçim Silindi'});
         res.send(election);
     } catch (error) {
-        await logService.logAction('DELETE', 'FAILURE', req.user?.id, req.params?.id+' Seçim Silinemedi');
+        await logService.logAction({action:'DELETE', status:'FAILURE', userId: req.user?.id, details: req.params?.id+' Seçim Silinemedi'});
         res.status(500).send(error);
     }
 };

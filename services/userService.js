@@ -35,7 +35,9 @@ exports.getUsers = async (req, res) => {
 
 exports.getUserById = async (req, res) => {
     try {
-        const user = await User.findById(req.params.id, { password: 0 });
+        const userIdFromToken = req.user.id;  // JWT'den gelen id
+        if(!userIdFromToken) return res.status(403).send({ message: 'Kendini görebilirsin' });
+        const user = await User.findById(userIdFromToken, { password: 0 });
         if (!user) {
             return res.status(404).send({ message: 'User not found' });
         }

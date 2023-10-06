@@ -60,13 +60,10 @@ const authenticateJWTOrVoter = async (req, res, next) => {
                 return next();
             }
         }
-        console.log(req.headers);
         // Voter Kontrolü
         const voterToken = req.headers['voter-token'];
-        console.log(`Token: [${voterToken}]`);
         if (voterToken) {
             const voter = await Voter.findOne({ token: String(voterToken) });
-            console.log(voter)
             if (voter) {
                 req.voter = voter;
                 return next();
