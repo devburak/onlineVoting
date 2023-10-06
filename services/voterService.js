@@ -2,7 +2,6 @@ const Voter = require('../db/models/voter');
 const Member = require('../db/models/member');
 const Election = require('../db/models/election');
 const { logAction } = require('./logService');
-const { ID } = require('appwrite');
 
 exports.getVoters = async (electionId, filters = {}, options = {}) => {
     try {
