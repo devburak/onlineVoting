@@ -38,7 +38,6 @@ exports.voteRequestService = async (identifier, electionId) => {
         }).exec();
         
         if (!voter ) {
-            console.log(voter)
             throw new Error('Seçmen Oy kullanmış');
         }
 
@@ -61,7 +60,7 @@ exports.voteRequestService = async (identifier, electionId) => {
             //sms ve mail
             const emailContent = voteCodeTemplate
             .replace(/{YOUR_VOTING_CODE}/g, votingCode)
-            .replace(/{VOTING_LINK}/g, votingLink)
+            .replace(/{VOTING_LINK}/g, votingLink+'?code='+votingCode)
             .replace(/{CONTACT_EMAIL}/g, contactEmail);
 
             // E-posta gönderme
@@ -141,7 +140,6 @@ exports.castVote = async (req, res) => {
         }
 
         const election = await Election.findById(electionId);
-        console.log(election)
         const currentDate = new Date();
         if (!election || !election.isActive || election.endTime <= currentDate) {
             throw new Error('Aktif Seçim yok');

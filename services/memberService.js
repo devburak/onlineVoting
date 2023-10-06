@@ -41,7 +41,7 @@ exports.getMembers = async (req, res) => {
         if (isNaN(page) || isNaN(limit)) {
             return res.status(400).send({ message: "Invalid page or limit value" });
         }
-        console.log(page,limit)
+
         const options = {
             page,
             limit,
