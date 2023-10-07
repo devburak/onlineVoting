@@ -38,7 +38,7 @@ exports.voteRequestService = async (identifier, electionId) => {
         }).exec();
         
         if (!voter ) {
-            throw new Error('Seçmen Oy kullanmış');
+            throw new Error('Seçmen Oy kullanmış veya kaydı henüz yapılmamış');
         }
 
         // Token oluşturma
@@ -60,7 +60,7 @@ exports.voteRequestService = async (identifier, electionId) => {
             //sms ve mail
             const emailContent = voteCodeTemplate
             .replace(/{YOUR_VOTING_CODE}/g, votingCode)
-            .replace(/{VOTING_LINK}/g, votingLink+'?code='+votingCode)
+            .replace(/{VOTING_LINK}/g,  votingLink+'?code='+votingCode)
             .replace(/{CONTACT_EMAIL}/g, contactEmail);
 
             // E-posta gönderme
@@ -68,7 +68,7 @@ exports.voteRequestService = async (identifier, electionId) => {
             await logService.logAction({action:'TOKEN',  status:'SUCCESS', details: "email üzerinden token gönderildi"});
         }else {
             // Identifier, e-posta formatında değil, bu durumda SMS gönder
-            const smsContent = `Oy kullanma kodunuz: ${votingCode}  Kod kullanım süresi 20 dk ile sınırlıdır. oy.sykp.org.tr/vote?code=${votingCode} adresine gidebilirsiniz.`;
+            const smsContent = `Oy kullanma kodunuz: ${votingCode}  Kod kullanım süresi 20 dk ile sınırlıdır. ${votingLink}/?code=${votingCode} adresine gidebilirsiniz.`;
             if (member.phone && member.phone.startsWith("90"))
                 await sendSMSTR(member.phone, smsContent);
             else

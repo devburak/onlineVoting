@@ -10,12 +10,9 @@ const memberSchema = new mongoose.Schema({
     email: {
         type: String,
         unique: true,
-        sparse: true,
-        default: null
-    },
-    created: { type: Date, default: Date.now },
-    updated: { type: Date, default: Date.now }
-});
+        sparse: true
+    }
+},{ timestamps: { createdAt: 'created', updatedAt: 'updated' } });
 // Save işleminden önce çalışacak olan middleware
 memberSchema.pre('save', function (next) {
     this.updated = new Date();

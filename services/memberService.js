@@ -3,11 +3,14 @@ const Voter = require('../db/models/voter')
 const maskPhone = require('../utils/maskPhone'); 
 const logService = require('./logService');
 const mongoose = require('mongoose');
-const cleanObj =require('../utils/cleaner')
+const cleanObj =require('../utils/cleaner');
+const { query } = require('express');
+
 exports.createMember = async (req, res) => {
     try {
-        
+        console.log(req.body)
         const cleanedMemberData = cleanObj(req.body);
+        console.log(cleanedMemberData)
         const member = new Member(cleanedMemberData);
         await member.save();
         // Başarılı işlem logu kaydet
@@ -31,15 +34,35 @@ exports.createMember = async (req, res) => {
     }
 };
 
-
 exports.getMembers = async (req, res) => {
     try {
-        let { page = 1, limit = 20, ...query } = req.query;
+        let { page = 1, limit = 20, ...filters } = req.query;
         // Sayıya dönüştürme işlemi
         page = parseInt(page);
         limit = parseInt(limit);
         if (isNaN(page) || isNaN(limit)) {
             return res.status(400).send({ message: "Invalid page or limit value" });
+        }
+
+        // Güvenli sorgu oluşturma
+        const query = {};
+        if(filters.name){
+            query.name = { $regex: filters.name, $options: 'i' };  // isimde case-insensitive arama yapar
+        }
+        if(filters.surname){
+            query.surname = { $regex: filters.surname, $options: 'i' };  
+        }
+        if(filters.city){
+            query.city = { $regex: filters.city, $options: 'i' };  
+        }
+        if(filters.email){
+            query.email = { $regex: filters.email, $options: 'i' };  
+        }
+        if(filters.phone){
+            query.phone = { $regex: filters.phone, $options: 'i' };  
+        }
+        if(filters.country){
+            query.country = { $regex: filters.country, $options: 'i' };  
         }
 
         const options = {
@@ -79,7 +102,9 @@ exports.getMemberById = async (req, res) => {
 
 exports.updateMember = async (req, res) => {
     try {
+        console.log(req.body)
         const cleanedMemberData = cleanObj(req.body);
+        console.log(cleanedMemberData)
         const member = await Member.updateOne({ _id: req.params.id }, cleanedMemberData, { new: true });
         if (!member) {
             return res.status(404).send({ message: 'Member not found' });
@@ -131,7 +156,7 @@ exports.deleteMember = async (req, res) => {
 
 exports.nonVoterMembers = async (req, res) => {
     try {
-        const { page = 1, limit = 20, electionId } = req.query;
+        const { page = 1, limit = 20,  electionId,...filters } = req.query;
         
         if (!mongoose.isValidObjectId(electionId)) {
             return res.status(400).send({ message: 'Invalid electionId' });
@@ -148,6 +173,24 @@ exports.nonVoterMembers = async (req, res) => {
         const query = {
             _id: { $nin: voterMemberIds }
         };
+        if(filters.name){
+            query.name = { $regex: filters.name, $options: 'i' };  // isimde case-insensitive arama yapar
+        }
+        if(filters.surname){
+            query.surname = { $regex: filters.surname, $options: 'i' };  
+        }
+        if(filters.city){
+            query.city = { $regex: filters.city, $options: 'i' };  
+        }
+        if(filters.email){
+            query.email = { $regex: filters.email, $options: 'i' };  
+        }
+        if(filters.phone){
+            query.phone = { $regex: filters.phone, $options: 'i' };  
+        }
+        if(filters.country){
+            query.country = { $regex: filters.country, $options: 'i' };  
+        }
         
         // Pagination ve sorting opsiyonlarını ayarla
         const options = {

@@ -46,7 +46,6 @@ exports.sendSMST = async (to, body) => {
             to: "+"+to,  
             from: senderNumber 
         });
-        console.log(`Message sent: ${message.sid}`);
         return message;
     } catch (error) {
         console.error('Error sending SMS:', error.message);
