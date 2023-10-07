@@ -32,6 +32,12 @@ exports.getElectionById = async (req, res) => {
         if (!election) {
             return res.status(404).send();
         }
+    
+        const now = new Date();  // Şu anki zamanı al
+    
+        // Yeni özellik ekleyerek ve şartı kontrol ederek belirle
+        election._doc.voteCanShow = election.endTime < now && election.isActive;
+        
         res.send(election);
     } catch (error) {
         res.status(500).send(error);

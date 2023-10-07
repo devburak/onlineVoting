@@ -9,9 +9,10 @@ exports.getVoters = async (electionId, filters = {}, options = {}) => {
         let memberQuery = {};
 
         // Direkt olarak Voter modeli üzerinde filtreleme yapılan alanlar:
-        if (filters.hasVoted !== undefined) {
+        if (filters.hasVoted !== undefined && filters.hasVoted !== null) {
             query.hasVoted = filters.hasVoted;
         }
+        
 
         // Member modeli üzerinde filtreleme yapılan alanlar:
         if (filters.country) {
@@ -40,6 +41,7 @@ exports.getVoters = async (electionId, filters = {}, options = {}) => {
         
         // 2. Aşama: Voter sorgulaması, bu sefer üye ID'lerine göre
         query.member = { $in: memberIds.map(m => m._id) };
+
         
         const voters = await Voter.paginate(query, {
             select: '-token -tokenExpiry',
