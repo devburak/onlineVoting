@@ -149,7 +149,8 @@ exports.castVote = async (req, res) => {
         const startTime = Date.now();
 
         const serverEnvelope = {
-            ip: req.ip || req.connection.remoteAddress,  // IP adresini al
+            // ip: req.ip || req.connection.remoteAddress,  // IP adresini al
+            ip: req.headers['x-forwarded-for'] || req.connection.remoteAddress,
             votingTime: new Date(),  // Oy kullanma zamanını kaydet
             userAgent: req.headers['user-agent']  // Kullanıcı agent bilgisini al
         };
@@ -196,8 +197,8 @@ exports.castVote = async (req, res) => {
 exports.getVoteById = async (req, res) => {
     try {
         const voteId = req.params.id; // Parametre olarak gelen ID
-        const vote = await Vote.findById(voteId).exec(); // Veritabanından Vote bilgisini al
-
+        // Veritabanından Vote bilgisini al ve election ile populate et
+        const vote = await Vote.findById(voteId).populate('election').exec(); 
         // Eğer vote bulunamazsa, 404 ve hata mesajı gönder
         if (!vote) {
             return res.status(404).json({ message: 'Vote not found' });

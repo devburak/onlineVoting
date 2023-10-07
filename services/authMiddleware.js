@@ -47,19 +47,58 @@ const authenticateVoter = async (req, res, next) => {
 };
 
 
+// const authenticateJWTOrVoter = async (req, res, next) => {
+//     try {
+//         // JWT Kontrolü
+//         const token = req.headers.authorization?.split(' ')[1] ?? null;
+//         if (token) {
+//             const decoded = jwt.verify(token, SECRET_KEY);
+//             const user = await User.findById(decoded.userId);
+
+//             if (user) {
+//                 req.user = user;
+//                 return next();
+//             }
+//         }
+//         // Voter Kontrolü
+//         const voterToken = req.headers['voter-token'];
+//         if (voterToken) {
+//             const voter = await Voter.findOne({ token: String(voterToken) });
+//             if (voter) {
+//                 req.voter = voter;
+//                 return next();
+//             }
+//         }
+        
+        
+//         // Eğer hiçbir koşul sağlanmıyorsa, yetkisiz olarak kabul edilir
+//         return res.status(403).send({ message: 'Unauthorized' });
+//     } catch (error) {
+//         console.error('Error in authenticateJWTOrVoter middleware:', error);
+//         res.status(500).send({ message: 'An error occurred' });
+//     }
+// };
+
 const authenticateJWTOrVoter = async (req, res, next) => {
     try {
         // JWT Kontrolü
         const token = req.headers.authorization?.split(' ')[1] ?? null;
         if (token) {
-            const decoded = jwt.verify(token, SECRET_KEY);
-            const user = await User.findById(decoded.userId);
+            try {
+                const decoded = jwt.verify(token, SECRET_KEY);
+                const user = await User.findById(decoded.userId);
 
-            if (user) {
-                req.user = user;
-                return next();
+                if (user) {
+                    req.user = user;
+                    return next();
+                }
+            } catch (jwtError) {
+                console.error('JWT verification failed:', jwtError);
+                // JWT doğrulama hatası durumunda bu bloğa gireriz ve burada özel bir şey yapmayız çünkü
+                // voterToken kontrolü de yapmak istiyoruz.
             }
         }
+
         // Voter Kontrolü
         const voterToken = req.headers['voter-token'];
         if (voterToken) {
@@ -70,7 +109,6 @@ const authenticateJWTOrVoter = async (req, res, next) => {
             }
         }
         
-        
         // Eğer hiçbir koşul sağlanmıyorsa, yetkisiz olarak kabul edilir
         return res.status(403).send({ message: 'Unauthorized' });
     } catch (error) {
@@ -78,6 +116,7 @@ const authenticateJWTOrVoter = async (req, res, next) => {
         res.status(500).send({ message: 'An error occurred' });
     }
 };
+
 
 
 

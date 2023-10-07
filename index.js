@@ -13,11 +13,13 @@ const app = express();
 app.use(express.json());
 // CORS OK
 app.use(cors());
+
 connectToDatabase();
 
 app.get('/', (req, res) => {
     res.send('Hello word');
 });
+app.set('trust proxy', true);
 
 app.use('/members', memberRoutes);
 app.use('/users', userRoutes );
