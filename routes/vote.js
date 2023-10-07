@@ -1,5 +1,5 @@
 const express = require('express');
-const {voteRequestService ,castVote,getVoteById} =require('../services/voteService');
+const {voteRequestService ,castVote,getVoteById ,getVotes} =require('../services/voteService');
 const {authenticateJWTOrVoter} = require('../services/authMiddleware')
 const router = express.Router();
 
@@ -27,5 +27,6 @@ router.post('/cast', castVote);
 
 router.get('/:id',authenticateJWTOrVoter,  getVoteById); // Yeni eklenen route
 
+router.get('/all/:electionId' ,authenticateJWTOrVoter , getVotes );
 
 module.exports = router;

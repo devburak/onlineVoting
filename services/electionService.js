@@ -1,6 +1,8 @@
 // service/electionService.js
-
+const { ObjectId } = require('mongoose').Types;
 const Election = require('../db/models/election');
+const Voter = require('../db/models/voter');
+const Vote = require('../db/models/vote');
 const logService = require('./logService');
 
 exports.createElection = async (req, res) => {
@@ -66,3 +68,46 @@ exports.deleteElection = async (req, res) => {
         res.status(500).send(error);
     }
 };
+
+exports.getSummary = async (req, res) => {
+    try {
+        const { electionId } = req.params;
+        console.log(electionId)
+        // Seçimin varlığını ve aktifliğini kontrol et
+        const election = await Election.findOne({
+            _id: new ObjectId(electionId),
+            isActive: true,
+            startTime: { $lt: new Date() },
+            endTime: { $gt: new Date() }
+        });
+
+        if (!election) {
+            return res.status(400).json({ message: 'Election not active or not found' });
+        }
+
+        // Toplam oy kullanıcısı ve kullanılan oy sayısını bul
+        const [totalVoters, totalVotes, votedVoters, notVotedVoters] = await Promise.all([
+            Voter.countDocuments({ election: electionId }),
+            Vote.countDocuments({ election: electionId }),
+            Voter.countDocuments({ election: electionId, hasVoted: true }),
+            Voter.countDocuments({ election: electionId, hasVoted: false })
+        ]);
+
+        // Her bir seçenek için oy sayısını bul
+        const choicesCount = await Vote.aggregate([
+            { $match: { election: new ObjectId(electionId) } },
+            { $group: { _id: '$choice', count: { $sum: 1 }, value: { $first: "$choiceValue" } } }
+        ]);
+
+        res.status(200).json({
+            totalVotes,
+            totalVoters,
+            votedVoters, 
+            notVotedVoters,
+            choicesCount
+        });
+    } catch (error) {
+        console.error('Error fetching election summary:', error);
+        res.status(500).json({ message: 'Internal Server Error' });
+    }
+}

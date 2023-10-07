@@ -1,12 +1,15 @@
 const express = require('express');
 const router = express.Router();
-const { authenticateJWT } = require('../services/authMiddleware');
+
+const { authenticateJWT ,authenticateJWTOrVoter} = require('../services/authMiddleware');
+
 const {
     createElection,
     getElections,
     getElectionById,
     updateElection,
-    deleteElection
+    deleteElection,
+    getSummary
 } = require('../services/electionService');
 const Election =require('../db/models/election')
 
@@ -25,6 +28,7 @@ router.get('/active', async (req, res) => {
         res.status(500).send({ message: 'An error occurred while retrieving the active election.' });
     }
 });
+router.get('/summary/:electionId',authenticateJWTOrVoter, getSummary);
 
 router.post('/', authenticateJWT, createElection);
 router.get('/', authenticateJWT, getElections);

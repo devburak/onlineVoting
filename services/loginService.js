@@ -52,7 +52,7 @@ exports.createPasswordReset = async (email) => {
     const expireTime = process.env.PASSWORD_CODE_EXPIRE || 2;
 
     // E-posta içeriği oluşturma
-    const resetLink = `${process.env.RESET_PASSWORD_LINK}/${resetCode}?email=${email}`;
+    const resetLink = `${process.env.RESET_PASSWORD_LINK}?code=${resetCode}&email=${email}`;
     const emailContent = resetPasswordEmailTemplate
         .replace('{resetCode}', resetCode)
         .replace('{resetLink}', resetLink)

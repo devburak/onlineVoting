@@ -141,8 +141,12 @@ exports.castVote = async (req, res) => {
 
         const election = await Election.findById(electionId);
         const currentDate = new Date();
-        if (!election || !election.isActive || election.endTime <= currentDate) {
+        if (!election || !election.isActive ) {
             throw new Error('Aktif Seçim yok');
+        }
+
+        if( election.endTime <= currentDate || election.startTime > currentDate ){
+            throw new Error('Seçim Henüz Başlamadı veya Seçim Sonlandı');
         }
 
         // Response time hesaplaması için başlangıç zamanı
@@ -209,5 +213,36 @@ exports.getVoteById = async (req, res) => {
         // Hata durumunda 500 status kodu ve hata bilgisi gönder
         console.error('Get Vote Error:', error);
         res.status(500).json({ message: 'Server Error' });
+    }
+};
+
+exports.getVotes = async (req, res) => {
+    try {
+        const { electionId } = req.params;
+        const { page = 1, limit = 30 } = req.query; // Varsayılan olarak sayfa 1 ve limit 30.
+
+        // Seçimi kontrol et
+        const election = await Election.findById(electionId);
+        if (!election) {
+            return res.status(404).json({ message: 'Seçim bulunamadı' });
+        }
+
+        const currentDate = new Date();
+        if (!election.isActive || election.startTime > currentDate ) {
+            return res.status(403).json({ message: 'Seçim henüz başlamadı veya Aktif değil' });
+        }
+
+        // Vote'ları getir
+        const votes = await Vote.paginate(
+            { election: electionId },
+            { page, limit, sort: { 'envelope.votingTime': 'desc' } }
+        );
+
+        res.status(200).json(votes);
+    } catch (error) {
+        console.error('Error in getVotes:', error);
+        res.status(500).json({
+            message: 'Vote’ları getirirken bir hata oluştu.',
+        });
     }
 };
