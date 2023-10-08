@@ -80,16 +80,16 @@ exports.getSummary = async (req, res) => {
         const { electionId } = req.params;
         console.log(electionId)
         // Seçimin varlığını ve aktifliğini kontrol et
-        const election = await Election.findOne({
-            _id: new ObjectId(electionId),
-            isActive: true,
-            startTime: { $lt: new Date() },
-            endTime: { $gt: new Date() }
-        });
+        // const election = await Election.findOne({
+        //     _id: new ObjectId(electionId),
+        //     isActive: true,
+        //     startTime: { $lt: new Date() },
+        //     endTime: { $gt: new Date() }
+        // });
 
-        if (!election) {
-            return res.status(400).json({ message: 'Election not active or not found' });
-        }
+        // if (!election) {
+        //     return res.status(400).json({ message: 'Election not active or not found' });
+        // }
 
         // Toplam oy kullanıcısı ve kullanılan oy sayısını bul
         const [totalVoters, totalVotes, votedVoters, notVotedVoters] = await Promise.all([
